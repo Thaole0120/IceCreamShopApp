@@ -1,2 +1,2 @@
 # IceCreamShopApp
-This is the app for Module 3 Project
+This is the app for Module 3 Project in ITEC 2905 - Capstone
