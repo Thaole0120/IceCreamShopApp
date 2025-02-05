@@ -2,11 +2,13 @@
 # Date: 1/29/2025
 
 # Store our ice cream shop's menu items
-flavors = ["vanilla", "caramel", "mint"]
+flavors = ["vanilla", "caramel", "mint", "mango", "cookies & cream", "chocolate"]
 toppings = ["sprinkles", "nuts", "cherry"]
+cones = ["cake cone", "sugar cone", "waffle cone"] # Adding an option to choose a cone
 prices = {
     "scoop" : 2.50,
-    "topping" : 0.50
+    "topping" : 0.50,
+    "cone" : 1.00 # Price for adding cone
 }
 
 def display_menu():
@@ -27,6 +29,7 @@ def display_menu():
     print("\nPrices:")
     print(f"Scoops: ${prices['scoop']:.2f} each")
     print(f"Toppings: ${prices['topping']:.2f} each")
+    print(f"Cones: ${prices['cone']:.2f} each")
 
 def get_flavors():
     """Gets ice cream flavor choices from the customer"""
@@ -79,30 +82,57 @@ def get_toppings():
     # Return the list of toppings that the user chose
     return chosen_toppings
 
-def calculate_total(num_scoops, num_toppings):
-    """Calculates the total cost of the order"""
+def get_cone_choice():
+    # Use a while loop to get the cone type from the customer
+    while True:
+        cone_choice = input("\nChoose your cone (cake cone, sugar cone or waffle cone): ").lower()
+        if cone_choice in cones: 
+            return cone_choice
+        print("Sorry, we don't have that type of cone.")
+
+def calculate_total(num_scoops, num_toppings, cone_choice):
+    """Calculates the total cost of the order, including discounts"""
     scoop_cost = num_scoops * prices["scoop"]
     topping_cost = num_toppings * prices["topping"]
-    return scoop_cost + topping_cost
+    cone_cost = prices["cone"] # Cone price doesn't change
 
-def print_receipt(num_scoops, chosen_flavors, chosen_toppings):
+    total =  scoop_cost + topping_cost + cone_cost
+
+    # Adding a discount of 10% off for orders over $10
+    if total > 10:
+        total *= 0.90 # Apply 10% discount
+        print("\nYou've received a 10% discount for orders over $10!")
+
+    return total
+
+def search_flavor():
+    """Funtion that lets customers search for their favorite flavor"""
+    search_favorite_flavor = input("\nEnter a flavor to check availability: ").lower()
+    if search_favorite_flavor in flavors:
+        print(f"Yes! We have {search_favorite_flavor}.")
+    else:
+        print(f"Sorry, we don't have {search_favorite_flavor}.")
+
+def print_receipt(num_scoops, chosen_flavors, chosen_toppings, cone_choice):
     """Prints a nice receipt for the customer"""
     print("\n=== Your Ice Cream Order ===")
     for i in range(num_scoops):
         print(f"Scoop {i+1}: {chosen_flavors[i].title()}")
     
+    print(f"\nCone: {cone_choice.title()}") 
+
     if chosen_toppings:
         print("\nToppings:")
         for topping in chosen_toppings:
             print(f"- {topping.title()}")
     
     #Print the total
-    total = calculate_total(num_scoops, len(chosen_toppings))
+    total = calculate_total(num_scoops, len(chosen_toppings), cone_choice)
     print(f"\nTotal: ${total:.2f}")
     
     # Save order to file
     with open("daily_orders.txt", "a") as file:
-        file.write(f"\nOrder: {num_scoops} scoops - ${total:.2f}")
+        file.write(f"\nOrder: {num_scoops} scoops, {cone_choice} - ${total:.2f}")
 
 # Main function - Simple test function
 def main():
@@ -112,8 +142,10 @@ def main():
     num_scoops, chosen_flavors = get_flavors()
     # Call the get toppings functions which return the list of toppings
     chosen_toppings = get_toppings()
+    # Call the cone choice
+    cone_choice = get_cone_choice()
     # Display the receipts
-    print_receipt(num_scoops, chosen_flavors, chosen_toppings)
+    print_receipt(num_scoops, chosen_flavors, chosen_toppings, cone_choice)
     
 
 # Automatically execute the main function when the application runs
